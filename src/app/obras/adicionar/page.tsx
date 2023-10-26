@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
-import { authWithGoogle, createWork, storage } from "@/config/firebase";
+import { createWork, storage } from "@/config/firebase";
 import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 
 export default function work() {
