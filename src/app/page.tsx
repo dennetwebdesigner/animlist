@@ -4,6 +4,9 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { get_user_info } from "@/functions/Auth/googleProvider";
+import MenuDesktop from "@/components/Menu/Menu.Desktop";
+
+
 export default function Home() {
   const [all_works, setAllWorks] = useState<any[]>([]);
   const router = useRouter();
@@ -28,6 +31,7 @@ export default function Home() {
 
   return (
     <main className="w-full min-h-screen">
+      <MenuDesktop />
       {all_works.map((item, i) => (
         <section
           key={i}
