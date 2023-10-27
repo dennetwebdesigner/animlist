@@ -35,7 +35,7 @@ export default function MenuDesktop() {
           {user && (
             <p>
               <Link
-                href="/perfil/minha-lista"
+                href="/obras/adicionar"
                 className="  p-2  m-2 hover:text-slate-200"
               >
                 Adicionar Obra
