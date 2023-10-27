@@ -2,20 +2,51 @@
 import { useEffect, useState } from "react";
 import { createWork, storage } from "@/config/firebase";
 import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
+import { works_by_id } from "@/repository/WorkRepository";
+import { useRouter } from "next/navigation";
 
-export default function work() {
+type WorkType = {
+  img: string;
+  name: string;
+  description: string;
+  link: string;
+  categories: string[];
+};
+export default function updateWork({ params }: { params: { id: string } }) {
   const [img, setImage] = useState<string>();
   const [progress, setProgress] = useState<number>(0);
   const [useLink, setUseLink] = useState<boolean>(false);
   const [categorySelect, setCategorySelect] = useState<string[]>([]);
+  const [backup, setBackup] = useState<WorkType>({
+    img: "",
+    name: "",
+    description: "",
+    link: "",
+    categories: [],
+  });
+  const [work, setWork] = useState<WorkType>({
+    img: "",
+    name: "",
+    description: "",
+    link: "",
+    categories: [],
+  });
   const [displayInput, setDisplayInput] = useState({
     linkImage: "none",
     updateImage: "block",
   });
-
-  // async function handleGoogle() {
-  //   await authWithGoogle();
-  // }
+  const [param, setParam] = useState<string>("");
+  const router = useRouter();
+  useEffect(() => {
+    if (params.id.length > 0 && work.name.length <= 0) {
+      setParam(decodeURI(params.id));
+      works_by_id(decodeURI(params.id)).then((data: WorkType) => {
+        setBackup(data);
+        setWork(data);
+        if (data.categories) setCategorySelect(data.categories);
+      });
+    }
+  }, []);
 
   useEffect(() => {
     if (useLink) setDisplayInput({ linkImage: "block", updateImage: "none" });
@@ -31,7 +62,12 @@ export default function work() {
     const link = e.target.elements.link;
     const link_img = e.target.elements.link_img;
 
-    if (!link.value || !name.value || !description.value || categorySelect.length <= 0) {
+    if (
+      !link.value ||
+      !name.value ||
+      !description.value ||
+      categorySelect.length <= 0
+    ) {
       alert("Preencha todos os campos corretamente");
       return;
     }
@@ -48,7 +84,7 @@ export default function work() {
           name: name.value,
           link: link.value,
           img: link_img.value,
-          categories: categorySelect
+          categories: categorySelect,
         });
         alert("salvo com sucesso");
         window.location.reload();
@@ -85,7 +121,7 @@ export default function work() {
             name: name.value,
             link: link.value,
             img: url,
-            categories: categorySelect
+            categories: categorySelect,
           })
             .then((data) => {
               console.log(data);
@@ -106,7 +142,7 @@ export default function work() {
         onSubmit={handleASubmit}
         className="w-5/12 min-w-[300px] flex flex-wrap justify-between"
       >
-        <h1>Adicionar Obra</h1>
+        <h1>Atualizar Obra</h1>
         <fieldset className="w-full my-[10px]">
           <label
             className="w-full mb-[3px] font-sans text-light text-[1.2em] "
@@ -119,6 +155,13 @@ export default function work() {
             autoComplete="off"
             type="text"
             name="name"
+            disabled={true}
+            value={work.name}
+            onChange={(e) => {
+              setWork((state) => {
+                return { ...state, name: e.target.value };
+              });
+            }}
           />
         </fieldset>
         <fieldset className="w-full my-[10px]">
@@ -132,6 +175,12 @@ export default function work() {
             className="w-full p-1 text-slate-600 outline-none"
             autoComplete="off"
             name="description"
+            value={work.description}
+            onChange={(e) => {
+              setWork((state) => {
+                return { ...state, description: e.target.value };
+              });
+            }}
           ></textarea>
         </fieldset>
         <fieldset className="w-full my-[10px]">
@@ -146,6 +195,12 @@ export default function work() {
             autoComplete="off"
             type="text"
             name="link"
+            value={work.link}
+            onChange={(e) => {
+              setWork((state) => {
+                return { ...state, link: e.target.value };
+              });
+            }}
           />
         </fieldset>
         <fieldset className="w-full my-[10px]">
@@ -179,7 +234,15 @@ export default function work() {
             <option value="Misterio">Misterio</option>
             <option value="Terror">Terror</option>
             <option value="Suspense">Suspense</option>
-            <option value="Comédia">Comédia</option>
+            <option value="Shounen">Shounen</option>
+            <option value="Drama">Drama</option>
+            <option value="Fantasia">Fantasia</option>
+            <option value="Escolar">Escolar</option>
+            <option value="Artes Marciais">Artes Marciais</option>
+            <option value="Sobrenatural">Sobrenatural</option>
+            <option value="Seinen">Seinen</option>
+            <option value="Super Poderes">Super Poderes</option>
+            <option value="Sci-fi">Sci-fi</option>
           </select>
           <label
             className="w-full mb-[3px] font-sans text-light text-[1.2em] "
@@ -225,6 +288,12 @@ export default function work() {
             autoComplete="off"
             type="text"
             name="link_img"
+            value={work.img}
+            onChange={(e) => {
+              setWork((state) => {
+                return { ...state, name: e.target.value };
+              });
+            }}
           />
         </fieldset>
         <fieldset

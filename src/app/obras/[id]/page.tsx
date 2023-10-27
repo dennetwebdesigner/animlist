@@ -12,6 +12,7 @@ export default function workId({ params }: { params: { id: string } }) {
     img: "",
     link: "",
     name: "",
+    categories: [],
   });
   const [user, setUser] = useState<User>({});
   const [cap, setCap] = useState<number | null>(null);
@@ -21,7 +22,7 @@ export default function workId({ params }: { params: { id: string } }) {
   const [style, setStyle] = useState<{ top: string }>({ top: "-100%" });
 
   async function handleGetWork() {
-    const id: string = params.id.split("%20").join(" ");
+    const id: string = decodeURI(params.id);
     const wi = await get_work(id);
     setWorkItem(wi);
   }
@@ -84,14 +85,14 @@ export default function workId({ params }: { params: { id: string } }) {
         setStyle={setStyle}
         setUpdateList={handleSubmit}
       />
-      <section className="w-5/12">
-        <article className="flex">
-          <div className="w-3/6">
+      <section className="sm:w-full sm:justify-center sm:flex sm:flex-wrap lg:w-5/12 lg:block">
+        <article className="flex flex-wrap">
+          <div className="sm:w-full lg:w-3/6 ">
             <h2 className="text-slate-400">Nome da Obra</h2>
             <h3>{workItem.name}</h3>
             <img src={workItem.img} alt="" className="w-full" />
           </div>
-          <div className="w-3/6 pt-11 px-2">
+          <div className="sm:w-full lg:w-3/6 pt-11 px-2">
             <h4 className="text-xl text-center">
               {hasWork == "Adicionar" ? (
                 <span>Adicionar a minha lista?</span>
@@ -139,6 +140,17 @@ export default function workId({ params }: { params: { id: string } }) {
               </p>
               <p>{timestamp && "Ultima vez atualizado:\n"}</p>
               <p>{timestamp}</p>
+              <div className="flex flex-wrap my-2">
+              <p>Categorias</p>
+                {workItem.categories.map((category: string) => (
+                  <p
+                    className="bg-blue-500 rounded-lg flex items-center px-2 m-1 cursor-pointer"
+                    key={category}
+                  >
+                    {category}
+                  </p>
+                ))}
+              </div>
             </div>
           </div>
         </article>

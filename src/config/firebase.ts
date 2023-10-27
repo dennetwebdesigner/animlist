@@ -26,6 +26,7 @@ export async function createWork(data: {
   name: string;
   description: string;
   link: string;
+  categories:string[]
 }) {
   await set(ref(database, "stores/" + data.name), data);
 }

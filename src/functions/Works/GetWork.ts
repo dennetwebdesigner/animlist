@@ -6,7 +6,8 @@ export interface workItemType {
     description: string,
     img:string,
     link:string,
-    name:string
+    name:string,
+    categories: string[]
 }  
 
 
