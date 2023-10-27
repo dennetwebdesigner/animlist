@@ -4,6 +4,7 @@ import { get_work, workItemType } from "@/functions/Works/GetWork";
 import { myListStore, profile_work_by_id } from "@/repository/myListRepository";
 import { useEffect, useState } from "react";
 import ModalUpdateWork from "@/components/modalUpdateWork";
+import MenuDesktop from "@/components/Menu/Menu.Desktop";
 type User = any;
 
 export default function workId({ params }: { params: { id: string } }) {
@@ -85,6 +86,7 @@ export default function workId({ params }: { params: { id: string } }) {
         setStyle={setStyle}
         setUpdateList={handleSubmit}
       />
+       <MenuDesktop />
       <section className="sm:w-full sm:justify-center sm:flex sm:flex-wrap lg:w-5/12 lg:block">
         <article className="flex flex-wrap">
           <div className="sm:w-full lg:w-3/6 ">

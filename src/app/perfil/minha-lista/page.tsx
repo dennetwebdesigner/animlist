@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { get_user_info } from "@/functions/Auth/googleProvider";
 import { profile_work_all } from "@/repository/myListRepository";
 import work from "@/app/obras/adicionar/page";
+import MenuDesktop from "@/components/Menu/Menu.Desktop";
 
 export default function my_list() {
   const [all_works, setAllWorks] = useState<any[]>([]);
@@ -64,6 +65,7 @@ export default function my_list() {
 
   return (
     <main className="w-full min-h-screen">
+       <MenuDesktop />
       {merge.map((item, i) => (
         <section
           key={i}

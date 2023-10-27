@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import { createWork, storage } from "@/config/firebase";
 import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
+import MenuDesktop from "@/components/Menu/Menu.Desktop";
 
 export default function work() {
   const [img, setImage] = useState<string>();
@@ -99,9 +100,7 @@ export default function work() {
   };
   return (
     <>
-      {/* <button type="button" onClick={handleGoogle}>
-      Google
-    </button> */}
+      <MenuDesktop />
       <form
         onSubmit={handleASubmit}
         className="w-5/12 min-w-[300px] flex flex-wrap justify-between"

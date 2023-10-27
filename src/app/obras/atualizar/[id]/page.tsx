@@ -4,6 +4,7 @@ import { createWork, storage } from "@/config/firebase";
 import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 import { works_by_id } from "@/repository/WorkRepository";
 import { useRouter } from "next/navigation";
+import MenuDesktop from "@/components/Menu/Menu.Desktop";
 
 type WorkType = {
   img: string;
@@ -135,9 +136,7 @@ export default function updateWork({ params }: { params: { id: string } }) {
   };
   return (
     <>
-      {/* <button type="button" onClick={handleGoogle}>
-      Google
-    </button> */}
+      <MenuDesktop />
       <form
         onSubmit={handleASubmit}
         className="w-5/12 min-w-[300px] flex flex-wrap justify-between"

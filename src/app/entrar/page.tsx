@@ -2,9 +2,12 @@
 
 import { authWithGoogle } from "@/functions/Auth/googleProvider";
 import { useRouter } from "next/navigation";
+import MenuDesktop from "@/components/Menu/Menu.Desktop";
 export default function Login() {
     const router = useRouter()
   return (
+    <>
+    <MenuDesktop />
     <main className="block w-2/6">
       <h1 className="text-center">Realize Login com sua conta</h1>
       <button
@@ -14,5 +17,7 @@ export default function Login() {
         Google
       </button>
     </main>
+    </>
+    
   );
 }
