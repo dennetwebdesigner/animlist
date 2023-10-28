@@ -57,7 +57,7 @@ export default function Home() {
                 router.push(`/obras/${item.name}`);
               }}
             />
-            <p className="text-slate-100 ml-1">{item.description}</p>
+            <p className="text-slate-100 ml-1 text-justify">{item.description}</p>
           </article>
         </section>
       ))}

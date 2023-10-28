@@ -1,7 +1,8 @@
 import { initializeApp } from "firebase/app";
 import { getStorage } from "firebase/storage";
-import { getAuth, signInWithPopup, GoogleAuthProvider } from "firebase/auth";
+import { getAuth, signOut } from "firebase/auth";
 import { getDatabase, ref, set,get } from "firebase/database";
+import { set_item } from "@/functions/Utils/storage";
 
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_API_KEY,
@@ -37,4 +38,13 @@ export const get_all_data = async () => {
     return refsnapshot[item]
   })
   return snapshot
+}
+
+export function logout(router:Function){
+  signOut(auth).then(() => {
+    router('/')
+    set_item('token', '')
+  }).catch((error) => {
+    console.log('logout error ', error)
+  });
 }

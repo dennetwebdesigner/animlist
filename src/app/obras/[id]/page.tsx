@@ -74,7 +74,7 @@ export default function workId({ params }: { params: { id: string } }) {
   }, []);
 
   useEffect(() => {
-    if (workItem.name != "" && user.uid != "") {
+    if (workItem.name != "" && user && user.uid != "") {
       has_work_my_list();
     }
   }, [workItem, user]);
@@ -86,75 +86,80 @@ export default function workId({ params }: { params: { id: string } }) {
         setStyle={setStyle}
         setUpdateList={handleSubmit}
       />
-       <MenuDesktop />
-      <section className="sm:w-full sm:justify-center sm:flex sm:flex-wrap lg:w-5/12 lg:block">
+      <MenuDesktop />
+      <section className="sm:w-full sm:justify-center sm:flex sm:flex-wrap md:w-5/12 md:block">
         <article className="flex flex-wrap">
-          <div className="sm:w-full lg:w-3/6 ">
+          <div className="sm:w-full md:w-3/6 ">
             <h2 className="text-slate-400">Nome da Obra</h2>
             <h3>{workItem.name}</h3>
             <img src={workItem.img} alt="" className="w-full" />
           </div>
-          <div className="sm:w-full lg:w-3/6 pt-11 px-2">
-            <h4 className="text-xl text-center">
-              {hasWork == "Adicionar" ? (
-                <span>Adicionar a minha lista?</span>
-              ) : (
-                <span>Já tenho na minha lista!</span>
-              )}
-            </h4>
-            <fieldset className="flex mt-4 items-center  justify-center">
-              <label htmlFor="" className="mr-1">
-                Qual Capitulo você parou?
-              </label>
-              <input
-                type="number"
-                className="text-slate-700 w-3/12 p-1"
-                placeholder="50"
-                value={cap || 0}
-                onChange={(e) => setCap(parseInt(e.target.value))}
-              />
-            </fieldset>
-            <button
-              className="w-full rounded-sm py-3 bg-red-700 mt-1"
-              onClick={() => {
-                if (hasWork == "Adicionar") handleSubmit();
-                else {
-                  if ((cap as number) == backupUpdate.cap) {
-                    alert("Você já esta neste capitulo atualmente!");
-                    return;
-                  } else if ((cap as number) < backupUpdate.cap) {
-                    alert("Cuidado pra não atualizar para capitulos já lidos!");
-                  }
 
-                  setStyle((state) => {
-                    return { ...state, top: "0" };
-                  });
-                }
-              }}
-            >
-              {hasWork}
-            </button>
-            <div className="mt-3">
-              <p className="mb-3">
-                {hasWork == "Atualizar"
-                  ? "Capitulo Atual: " + backupUpdate.cap
-                  : ""}
-              </p>
-              <p>{timestamp && "Ultima vez atualizado:\n"}</p>
-              <p>{timestamp}</p>
-              <div className="flex flex-wrap my-2">
-              <p>Categorias</p>
-                {workItem.categories.map((category: string) => (
-                  <p
-                    className="bg-blue-500 rounded-lg flex items-center px-2 m-1 cursor-pointer"
-                    key={category}
-                  >
-                    {category}
-                  </p>
-                ))}
+          {user && (
+            <div className="sm:w-full md:w-3/6 pt-11 px-2">
+              <h4 className="text-xl text-center">
+                {hasWork == "Adicionar" ? (
+                  <span>Adicionar a minha lista?</span>
+                ) : (
+                  <span>Já tenho na minha lista!</span>
+                )}
+              </h4>
+              <fieldset className="flex mt-4 items-center  justify-center">
+                <label htmlFor="" className="mr-1">
+                  Qual Capitulo você parou?
+                </label>
+                <input
+                  type="number"
+                  className="text-slate-700 w-3/12 p-1"
+                  placeholder="50"
+                  value={cap || 0}
+                  onChange={(e) => setCap(parseInt(e.target.value))}
+                />
+              </fieldset>
+              <button
+                className="w-full rounded-sm py-3 bg-red-700 mt-1"
+                onClick={() => {
+                  if (hasWork == "Adicionar") handleSubmit();
+                  else {
+                    if ((cap as number) == backupUpdate.cap) {
+                      alert("Você já esta neste capitulo atualmente!");
+                      return;
+                    } else if ((cap as number) < backupUpdate.cap) {
+                      alert(
+                        "Cuidado pra não atualizar para capitulos já lidos!"
+                      );
+                    }
+
+                    setStyle((state) => {
+                      return { ...state, top: "0" };
+                    });
+                  }
+                }}
+              >
+                {hasWork}
+              </button>
+              <div className="mt-3">
+                <p className="mb-3">
+                  {hasWork == "Atualizar"
+                    ? "Capitulo Atual: " + backupUpdate.cap
+                    : ""}
+                </p>
+                <p>{timestamp && "Ultima vez atualizado:\n"}</p>
+                <p>{timestamp}</p>
+                <div className="flex flex-wrap my-2">
+                  <p>Categorias</p>
+                  {workItem.categories.map((category: string) => (
+                    <p
+                      className="bg-blue-500 rounded-lg flex items-center px-2 m-1 cursor-pointer"
+                      key={category}
+                    >
+                      {category}
+                    </p>
+                  ))}
+                </div>
               </div>
             </div>
-          </div>
+          )}
         </article>
         <p className="w-full text-justify">{workItem.description}</p>
       </section>

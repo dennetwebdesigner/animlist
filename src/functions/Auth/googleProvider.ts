@@ -4,8 +4,8 @@ import {
   onAuthStateChanged,
 } from "firebase/auth";
 import { auth } from "@/config/firebase";
-import { get_item, set_item } from "../Utils/storage";
-import { Dispatch } from "react";
+import { set_item } from "../Utils/storage";
+
 
 const provider = new GoogleAuthProvider();
 provider.addScope("https://www.googleapis.com/auth/contacts.readonly");
