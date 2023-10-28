@@ -6,13 +6,11 @@ import { useRouter } from "next/navigation";
 import { get_user_info } from "@/functions/Auth/googleProvider";
 import MenuDesktop from "@/components/Menu/Menu.Desktop";
 
-
 export default function Home() {
   const [all_works, setAllWorks] = useState<any[]>([]);
   const router = useRouter();
-  const [user, setUser] = useState<any>({});
+
   useEffect(() => {
-    get_user_info(setUser);
     get_all_data()
       .then((data) => {
         setAllWorks(data);
@@ -24,10 +22,6 @@ export default function Home() {
         console.log(error);
       });
   }, []);
-
-  useEffect(() => {
-    if (Object.keys(user).length > 0) console.log(user);
-  }, [user]);
 
   return (
     <main className="w-full min-h-screen">
