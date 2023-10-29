@@ -92,7 +92,7 @@ export default function workId({ params }: { params: { id: string } }) {
           <div className="sm:w-full md:w-3/6 ">
             <h2 className="text-slate-400">Nome da Obra</h2>
             <h3>{workItem.name}</h3>
-            <img src={workItem.img} alt="" className="w-full" />
+            <img src={workItem.img} alt="" className="w-screen mx auto px-2" />
           </div>
 
           {user && (
