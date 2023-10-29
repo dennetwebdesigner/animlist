@@ -33,10 +33,10 @@ export default function Register() {
   return (
     <div className="w-full h-screen">
     <MenuDesktop />
-    <main className="block w-2/6 m-auto my-[15vh]">
+    <main className="block sm:w-full lg:w-2/6 m-auto lg:my-[15vh]">
 
       <form className="w-full mb-4" onSubmit={handleSubmit}>
-      <h3 className="font-sans text-2xl font-semibold">Cadastrar conta</h3>
+      <h3 className="sm:mx-auto  font-sans text-2xl font-semibold text-center md:text-left">Cadastrar conta</h3>
       <Fieldset data={{label:'Email:', placeholder: 'exemplo@exemplo.com',name:'email',type:'email'}} />
       <Fieldset data={{label:'Senha:', placeholder: '*******************',name:'password',type:'password'}} />
       <Fieldset data={{label:'Confirme a senha:', placeholder: '*******************',name:'confirm',type:'password'}} />
