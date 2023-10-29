@@ -14,7 +14,7 @@ export default function modalUpdateWork({
     <>
       <div
         style={style}
-        className="w-80 h-20 p-2 absolute right-0 left-0 m-auto bg-slate-50 text-black transition-[2s]"
+        className="w-80 h-20 p-2 fixed right-0 left-0 m-auto bg-slate-50 text-black transition-[2s]"
       >
         <h3 className="text-center mb-2">Tem certeza que deseja fazer isso?</h3>
         <div className="flex flex-wrap justify-end pr-2">
