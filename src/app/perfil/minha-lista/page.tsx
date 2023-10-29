@@ -5,23 +5,32 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { get_user_info } from "@/functions/Auth/googleProvider";
 import { profile_work_all } from "@/repository/myListRepository";
-import work from "@/app/obras/adicionar/page";
+
 import MenuDesktop from "@/components/Menu/Menu.Desktop";
+import { workItemType } from "@/functions/Works/GetWork";
+import { timerSearchInput } from "@/functions/Works/timerSearchInput";
+import CardWork from "@/components/Work/Card";
 
 export default function my_list() {
   const [all_works, setAllWorks] = useState<any[]>([]);
   const router = useRouter();
   const [user, setUser] = useState<any>({});
-  const [merge, setMerge] = useState<
-    {
-      name: string;
-      description: string;
-      cap: number;
-      last_update: string;
-      img: string;
-      link: string;
-    }[]
-  >([]);
+  const [merge, setMerge] = useState<workItemType[]>([]);
+
+  const [search, setSearch] = useState<string>("");
+  const [timer, setTimer] = useState<any>();
+  const [searchWorks, setSearchWork] = useState<workItemType[]>([]);
+
+  useEffect(() => {
+    timerSearchInput({
+      all_works: merge,
+      search,
+      setSearchWork,
+      setTimer,
+      timer,
+    });
+  }, [search]);
+
   useEffect(() => {
     get_user_info(setUser);
     get_all_data()
@@ -45,18 +54,22 @@ export default function my_list() {
           for (let index = 0; index < data.length; index++) {
             const element = data[index];
             const workInArray = all_works as any[];
-            const item = workInArray.find(converted => element.name == converted.name)
-            if(item){
+            const item = workInArray.find(
+              (converted) => element.name == converted.name
+            );
+            if (item) {
               setMerge((state: any) => {
                 const convertInArray = state as any[];
-                const hasItem = convertInArray.find((itemConverted) => itemConverted.name == item.name);
+                const hasItem = convertInArray.find(
+                  (itemConverted) => itemConverted.name == item.name
+                );
                 if (hasItem) {
                   return state;
                 } else {
                   return [...state, { ...item, ...element }];
                 }
               });
-            }           
+            }
           }
         }
       });
@@ -65,31 +78,11 @@ export default function my_list() {
 
   return (
     <main className="w-full min-h-screen">
-       <MenuDesktop />
-      {merge.map((item, i) => (
-        <section
-          key={i}
-          className="w-11/12 min-h-[25vh] relative  my-2 cursor-pointer mx-auto "
-        >
-          <article className="bg-slate-800 flex justify-between p-2">
-            <h3 className="">
-              <Link href={`/obras/${item.name}`}>{item.name}</Link>
-            </h3>
-            <p>{item.cap && "Lido ate:" + item.cap} </p>
-          </article>
-          <article className="w-full flex">
-            <img
-              src={item.img}
-              alt="test"
-              className="w-3/12 max-w-[150px] h-full object-cover p-1"
-              onClick={() => {
-                router.push(`/obras/${item.name}`);
-              }}
-            />
-            <p className="text-slate-100 ml-1">{item.description}</p>
-          </article>
-        </section>
-      ))}
+      <MenuDesktop getSearch={setSearch} />
+      {searchWorks.length <= 0 &&
+        merge.map((item, i) => <CardWork item={{ ...item, i }} />)}
+      {searchWorks.length > 0 &&
+        searchWorks.map((item, i) => <CardWork item={{ ...item, i }} />)}
     </main>
   );
 }
