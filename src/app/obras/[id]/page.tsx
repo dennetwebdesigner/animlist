@@ -87,7 +87,8 @@ export default function workId({ params }: { params: { id: string } }) {
         setUpdateList={handleSubmit}
       />
       <MenuDesktop />
-      <section className="sm:w-full sm:justify-center sm:flex sm:flex-wrap md:w-5/12 md:block">
+      {/* md:w-5/12 md:block */}
+      <section className="sm:w-5/12 2xl:justify-center 2xl:flex 2xl:flex-wrap ">
         <article className="flex flex-wrap">
           <div className="sm:w-full md:w-3/6 ">
             <h2 className="text-slate-400">Nome da Obra</h2>

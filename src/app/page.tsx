@@ -3,7 +3,6 @@ import { get_all_data } from "@/config/firebase";
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { get_user_info } from "@/functions/Auth/googleProvider";
 import MenuDesktop from "@/components/Menu/Menu.Desktop";
 
 export default function Home() {
@@ -48,16 +47,24 @@ export default function Home() {
               </ul>
             </nav>
           </article>
-          <article className="w-full flex">
+          <article className="w-full md:flex">
             <img
               src={item.img}
-              alt="test"
-              className="w-3/12 max-w-[150px] h-full object-cover p-1"
+              alt={`cover work ${item.name}`}
+              className="w-8/12  h-full object-cover p-1 mx-auto block md:w-2/12"
               onClick={() => {
                 router.push(`/obras/${item.name}`);
               }}
             />
-            <p className="text-slate-100 ml-1 text-justify">{item.description}</p>
+            <details className="w-full my-4 block md:hidden">
+              <summary className="text-xl font-semibold font-sans my-2 pl-3">Ver sinopse</summary>
+              <p className="text-justify">{item.description}</p>
+            </details>
+            <div className="w-full hidden md:block">
+              <p className="text-slate-100 ml-1 text-justify">
+                {item.description}
+              </p>
+            </div>
           </article>
         </section>
       ))}

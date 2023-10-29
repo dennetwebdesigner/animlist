@@ -178,7 +178,15 @@ export default function work() {
             <option value="Misterio">Misterio</option>
             <option value="Terror">Terror</option>
             <option value="Suspense">Suspense</option>
-            <option value="Comédia">Comédia</option>
+            <option value="Shounen">Shounen</option>
+            <option value="Drama">Drama</option>
+            <option value="Fantasia">Fantasia</option>
+            <option value="Escolar">Escolar</option>
+            <option value="Artes Marciais">Artes Marciais</option>
+            <option value="Sobrenatural">Sobrenatural</option>
+            <option value="Seinen">Seinen</option>
+            <option value="Super Poderes">Super Poderes</option>
+            <option value="Sci-fi">Sci-fi</option>
           </select>
           <label
             className="w-full mb-[3px] font-sans text-light text-[1.2em] "
