@@ -5,6 +5,8 @@ import { myListStore, profile_work_by_id } from "@/repository/myListRepository";
 import { useEffect, useState } from "react";
 import ModalUpdateWork from "@/components/modalUpdateWork";
 import MenuDesktop from "@/components/Menu/Menu.Desktop";
+import { dateNow } from "@/functions/Utils/dateNow";
+import { commentStore } from "@/repository/CommentsRepository";
 type User = any;
 
 export default function workId({ params }: { params: { id: string } }) {
@@ -22,6 +24,10 @@ export default function workId({ params }: { params: { id: string } }) {
   const [backupUpdate, setbackupUpdate] = useState<{ cap: number }>({ cap: 0 });
   const [style, setStyle] = useState<{ top: string }>({ top: "-100%" });
 
+  // Comments
+  const [comments, setComments] = useState(null);
+  const [commentInput, setCommentInput] = useState("");
+
   async function handleGetWork() {
     const id: string = decodeURI(params.id);
     const wi = await get_work(id);
@@ -29,6 +35,7 @@ export default function workId({ params }: { params: { id: string } }) {
   }
 
   function has_work_my_list() {
+    console.log(user);
     profile_work_by_id(user?.uid as string, workItem.name)
       .then((data) => {
         if (data != null) {
@@ -37,7 +44,6 @@ export default function workId({ params }: { params: { id: string } }) {
           setTimestamp(data.last_update);
         }
         setHasWork(data == null ? "Adicionar" : "Atualizar");
-        console.log(data);
       })
       .catch((d) => {
         console.log(d);
@@ -45,8 +51,6 @@ export default function workId({ params }: { params: { id: string } }) {
   }
 
   async function handleSubmit() {
-    console.log(backupUpdate.cap);
-
     if (cap == null) {
       alert("Adicione ultimo capitulo lido!");
       return;
@@ -68,6 +72,21 @@ export default function workId({ params }: { params: { id: string } }) {
     }
   }
 
+  async function handleComment() {
+    commentStore(
+      {
+        user: {
+          id: user.uid,
+          name: user.photoURL,
+          photo: user.uid,
+        },
+        timestamp: dateNow(),
+        comment: commentInput,
+      },
+      workItem.name
+    );
+  }
+
   useEffect(() => {
     get_user_info(setUser);
     handleGetWork();
@@ -80,7 +99,7 @@ export default function workId({ params }: { params: { id: string } }) {
   }, [workItem, user]);
 
   return (
-    <>
+    <main className="w-full flex flex-wrap h-screen overflow-y-auto justify-center">
       <ModalUpdateWork
         style={style}
         setStyle={setStyle}
@@ -88,6 +107,7 @@ export default function workId({ params }: { params: { id: string } }) {
       />
       <MenuDesktop />
       {/* md:w-5/12 md:block */}
+
       <section className="sm:w-5/12 2xl:justify-center 2xl:flex 2xl:flex-wrap ">
         <article className="flex flex-wrap">
           <div className="sm:w-full md:w-3/6 ">
@@ -164,6 +184,35 @@ export default function workId({ params }: { params: { id: string } }) {
         </article>
         <p className="w-full text-justify">{workItem.description}</p>
       </section>
-    </>
+
+      <section className="w-4/12 h-[70vh] border-l border-l-50 ml-1">
+        <h3 className="h-[8%] text-xl pl-2">Comentários</h3>
+
+        <section className="h-[84%] w-full p-1">
+          <div className=" flex w-full flex-wrap items-center border p-2 ">
+            <div className="w-full flex items-center">
+              <img
+                src={user!.photoURL}
+                alt=""
+                className="w-[28px] h-[28px] rounded-full mr-2 mb-3 "
+              />
+              <p className="text-slate-300 mb-2">{user!.displayName}</p>
+              <p className="pl-2 text-[10px]">Enviado - {dateNow()}</p>
+            </div>
+
+            <div className="w-full p-2 ">Essa história é massa man</div>
+          </div>
+        </section>
+        <div className="w-full h-[8%]">
+          <input
+            className="h-full w-10/12"
+            onChange={(e) => setCommentInput(e.target.value)}
+          />
+          <button className="2/12 text-center" onClick={handleComment}>
+            Enviar
+          </button>
+        </div>
+      </section>
+    </main>
   );
 }

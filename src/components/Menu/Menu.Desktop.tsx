@@ -28,7 +28,7 @@ export default function MenuDesktop(props: any) {
 
   return (
     <>
-      <header className="flex w-full p-2 px-6 justify-between items-center">
+      <header className="flex w-full md:h-10 p-2 px-6 justify-between items-center">
         <h1 className="font-bold font-sans text-2xl">Minha Lista PI</h1>
 
         <p
