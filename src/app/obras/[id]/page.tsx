@@ -275,7 +275,11 @@ export default function workId({ params }: { params: { id: string } }) {
                       alt=""
                       className="w-[28px] h-[28px] rounded-full mr-2 mb-3 "
                     />
-                    <p className="text-slate-300 mb-2">{comment?.name}</p>
+                    <p className="text-slate-300 mb-2">
+                      <Link href={`/perfil/${comment?.name}`}>
+                        {comment?.name}
+                      </Link>
+                    </p>
                     <p className="pl-2 text-[10px]">
                       Enviado - {comment?.timestamp}
                     </p>
