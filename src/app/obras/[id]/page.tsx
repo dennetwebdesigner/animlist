@@ -112,7 +112,7 @@ export default function workId({ params }: { params: { id: string } }) {
         comment: commentInput,
       };
 
-      await commentStore(data, workItem.name);
+      await commentStore(data, decodeURI(params.id));
 
       const p = await profile_by_id(data?.user_id);
       setComments((state) => [
@@ -127,7 +127,7 @@ export default function workId({ params }: { params: { id: string } }) {
   useEffect(() => {
     get_user_info(setUser);
     handleGetWork();
-    commet_by_work(workItem.name)
+    commet_by_work(decodeURI(params.id))
       .then((data: any) => {
         if (comments.length <= 0) {
           setComments(data);
