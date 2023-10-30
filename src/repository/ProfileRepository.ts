@@ -20,10 +20,10 @@ export async function profileStore(user_id: string, data: profileDTO) {
   return await set(ref(database, `profile/${user_id}`), profile);
 }
 
-export async function profile_by_id(user_id: string): Promise<profileDTO> {
+export async function profile_by_id(
+  user_id: string
+): Promise<profileDTO & { id: string }> {
   const refsnapshot = (await get(ref(database, `profile/${user_id}`))).val();
-  //   const snapshot = Object.keys(refsnapshot).map((item) => {
-  //     return refsnapshot[item];
-  //   });
+
   return !refsnapshot ? null : refsnapshot;
 }

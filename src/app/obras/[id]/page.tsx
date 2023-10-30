@@ -6,7 +6,11 @@ import { useEffect, useState } from "react";
 import ModalUpdateWork from "@/components/modalUpdateWork";
 import MenuDesktop from "@/components/Menu/Menu.Desktop";
 import { dateNow } from "@/functions/Utils/dateNow";
-import { commentStore, commet_by_work } from "@/repository/CommentsRepository";
+import {
+  commentDestroy,
+  commentStore,
+  commet_by_work,
+} from "@/repository/CommentsRepository";
 import { profile_by_id } from "@/repository/ProfileRepository";
 import Link from "next/link";
 
@@ -111,7 +115,6 @@ export default function workId({ params }: { params: { id: string } }) {
       await commentStore(data, workItem.name);
 
       const p = await profile_by_id(data?.user_id);
-
       setComments((state) => [
         ...state,
         { ...data, photo: p?.photo, name: p?.name },
@@ -234,6 +237,7 @@ export default function workId({ params }: { params: { id: string } }) {
           {comments &&
             comments.map((comment, i: number) => {
               profile_by_id(comment?.user_id).then((thisUser) => {
+                console.log(thisUser);
                 setComments((state) => {
                   state[i] = {
                     ...state[i],
@@ -246,9 +250,26 @@ export default function workId({ params }: { params: { id: string } }) {
 
               return (
                 <div
-                  className=" flex w-full flex-wrap items-center border p-2 "
+                  className=" flex w-full flex-wrap items-center border p-2 relative "
                   key={i}
                 >
+                  {comment?.user_id == user!.uid && (
+                    <p
+                      className="absolute right-2 top-0 text-red-500 cursor-pointer font-extrabold"
+                      onClick={() => {
+                        commentDestroy(workItem.name, comment.id);
+
+                        const copy: string[] = JSON.parse(
+                          JSON.stringify(comments)
+                        );
+                        delete copy[i];
+                        const t = copy.filter((n) => n);
+                        setComments(t);
+                      }}
+                    >
+                      x
+                    </p>
+                  )}
                   <div className="w-full flex items-center">
                     <img
                       src={comment?.photo && comment?.photo}
