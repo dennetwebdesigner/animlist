@@ -26,7 +26,12 @@ export default function MenuDesktop(props: any) {
   return (
     <>
       <header className="flex w-full md:h-14 p-2 px-6 justify-between items-center ">
-        <h1 className="font-bold font-sans text-2xl">Minha Lista PI</h1>
+        <h1
+          className="font-bold font-sans text-2xl"
+          onClick={() => router.push("/")}
+        >
+          Minha Lista PI
+        </h1>
 
         <p
           className="block cursor-pointer"
