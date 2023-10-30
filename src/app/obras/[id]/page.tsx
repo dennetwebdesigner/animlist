@@ -257,7 +257,7 @@ export default function workId({ params }: { params: { id: string } }) {
                     <p
                       className="absolute right-2 top-0 text-red-500 cursor-pointer font-extrabold"
                       onClick={() => {
-                        commentDestroy(workItem.name, comment.id);
+                        commentDestroy(decodeURI(params.id), comment.id);
 
                         const copy: string[] = JSON.parse(
                           JSON.stringify(comments)
