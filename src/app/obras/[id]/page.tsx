@@ -6,7 +6,10 @@ import { useEffect, useState } from "react";
 import ModalUpdateWork from "@/components/modalUpdateWork";
 import MenuDesktop from "@/components/Menu/Menu.Desktop";
 import { dateNow } from "@/functions/Utils/dateNow";
-import { commentStore } from "@/repository/CommentsRepository";
+import { commentStore, commet_by_work } from "@/repository/CommentsRepository";
+import { profile_by_id } from "@/repository/ProfileRepository";
+import Link from "next/link";
+
 type User = any;
 
 export default function workId({ params }: { params: { id: string } }) {
@@ -24,8 +27,20 @@ export default function workId({ params }: { params: { id: string } }) {
   const [backupUpdate, setbackupUpdate] = useState<{ cap: number }>({ cap: 0 });
   const [style, setStyle] = useState<{ top: string }>({ top: "-100%" });
 
+  const [profile, setProfile] = useState<{
+    name: string;
+    cover: string;
+    photo: string;
+    age: number;
+  }>({
+    name: "",
+    cover: "",
+    photo: "",
+    age: 0,
+  });
+
   // Comments
-  const [comments, setComments] = useState(null);
+  const [comments, setComments] = useState<any[]>([]);
   const [commentInput, setCommentInput] = useState("");
 
   async function handleGetWork() {
@@ -35,7 +50,6 @@ export default function workId({ params }: { params: { id: string } }) {
   }
 
   function has_work_my_list() {
-    console.log(user);
     profile_work_by_id(user?.uid as string, workItem.name)
       .then((data) => {
         if (data != null) {
@@ -49,6 +63,20 @@ export default function workId({ params }: { params: { id: string } }) {
         console.log(d);
       });
   }
+
+  useEffect(() => {
+    if (!profile.name && user!.uid) {
+      profile_by_id(user!.uid)
+        .then((data) => {
+          if (data) {
+            setProfile(data!);
+          }
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    }
+  }, [user]);
 
   async function handleSubmit() {
     if (cap == null) {
@@ -73,23 +101,36 @@ export default function workId({ params }: { params: { id: string } }) {
   }
 
   async function handleComment() {
-    commentStore(
-      {
-        user: {
-          id: user.uid,
-          name: user.photoURL,
-          photo: user.uid,
-        },
+    try {
+      const data = {
+        user_id: user!.uid,
         timestamp: dateNow(),
         comment: commentInput,
-      },
-      workItem.name
-    );
+      };
+
+      await commentStore(data, workItem.name);
+
+      const p = await profile_by_id(data?.user_id);
+
+      setComments((state) => [
+        ...state,
+        { ...data, photo: p?.photo, name: p?.name },
+      ]);
+    } catch (error) {
+      console.log(error);
+    }
   }
 
   useEffect(() => {
     get_user_info(setUser);
     handleGetWork();
+    commet_by_work(workItem.name)
+      .then((data: any) => {
+        if (comments.length <= 0) {
+          setComments(data);
+        }
+      })
+      .catch((error) => console.log(error));
   }, []);
 
   useEffect(() => {
@@ -185,33 +226,72 @@ export default function workId({ params }: { params: { id: string } }) {
         <p className="w-full text-justify">{workItem.description}</p>
       </section>
 
-      <section className="w-4/12 h-[70vh] border-l border-l-50 ml-1">
+      {/* COMMENTS CONTAINER */}
+      <section className="w-full pt-6 md:pt-0 md:w-4/12 h-[70vh] md:border-l md:border-l-50 ml-1 ">
         <h3 className="h-[8%] text-xl pl-2">Comentários</h3>
 
         <section className="h-[84%] w-full p-1">
-          <div className=" flex w-full flex-wrap items-center border p-2 ">
-            <div className="w-full flex items-center">
-              <img
-                src={user!.photoURL}
-                alt=""
-                className="w-[28px] h-[28px] rounded-full mr-2 mb-3 "
-              />
-              <p className="text-slate-300 mb-2">{user!.displayName}</p>
-              <p className="pl-2 text-[10px]">Enviado - {dateNow()}</p>
-            </div>
+          {comments &&
+            comments.map((comment, i: number) => {
+              profile_by_id(comment?.user_id).then((thisUser) => {
+                setComments((state) => {
+                  state[i] = {
+                    ...state[i],
+                    photo: thisUser?.photo,
+                    name: thisUser?.name,
+                  };
+                  return state;
+                });
+              });
 
-            <div className="w-full p-2 ">Essa história é massa man</div>
-          </div>
+              return (
+                <div
+                  className=" flex w-full flex-wrap items-center border p-2 "
+                  key={i}
+                >
+                  <div className="w-full flex items-center">
+                    <img
+                      src={comment?.photo && comment?.photo}
+                      alt=""
+                      className="w-[28px] h-[28px] rounded-full mr-2 mb-3 "
+                    />
+                    <p className="text-slate-300 mb-2">{comment?.name}</p>
+                    <p className="pl-2 text-[10px]">
+                      Enviado - {comment?.timestamp}
+                    </p>
+                  </div>
+
+                  <div className="w-full p-2 ">{comment?.comment}</div>
+                </div>
+              );
+            })}
         </section>
-        <div className="w-full h-[8%]">
-          <input
-            className="h-full w-10/12"
-            onChange={(e) => setCommentInput(e.target.value)}
-          />
-          <button className="2/12 text-center" onClick={handleComment}>
-            Enviar
-          </button>
-        </div>
+
+        {/* FORM COMMENT */}
+        {profile!.name && (
+          <div className="w-full h-[8%]">
+            <input
+              className="h-full w-10/12 text-black px-2"
+              onChange={(e) => setCommentInput(e.target.value)}
+            />
+            <button
+              className="2/12 text-center"
+              onClick={handleComment}
+              type="button"
+            >
+              Enviar
+            </button>
+          </div>
+        )}
+        {!profile!.name && (
+          <p className="px-2">
+            Necessario estar logado e/ou com o nome configurado para poder
+            comentar -{" "}
+            <span className="text-red-500">
+              <Link href="/configuracoes">configure aqui!</Link>
+            </span>
+          </p>
+        )}
       </section>
     </main>
   );
