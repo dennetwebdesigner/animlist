@@ -22,11 +22,8 @@ export async function commet_by_work(work_id: string) {
   ).val();
 
   const snapshot = Object.keys(refsnapshot).map((item) => {
-    return refsnapshot[item];
-  });
-  const data = Object.keys(snapshot[0]).map((item) => {
-    return { ...snapshot[0][item], id: item };
+    return { ...refsnapshot[item], id: item };
   });
 
-  return data;
+  return snapshot;
 }

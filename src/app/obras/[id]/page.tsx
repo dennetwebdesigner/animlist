@@ -130,6 +130,7 @@ export default function workId({ params }: { params: { id: string } }) {
     commet_by_work(decodeURI(params.id))
       .then((data: any) => {
         if (comments.length <= 0) {
+          console.log(data);
           setComments(data);
         }
       })
@@ -237,7 +238,6 @@ export default function workId({ params }: { params: { id: string } }) {
           {comments &&
             comments.map((comment, i: number) => {
               profile_by_id(comment?.user_id).then((thisUser) => {
-                console.log(thisUser);
                 setComments((state) => {
                   state[i] = {
                     ...state[i],
@@ -247,7 +247,6 @@ export default function workId({ params }: { params: { id: string } }) {
                   return state;
                 });
               });
-
               return (
                 <div
                   className=" flex w-full flex-wrap items-center border p-2 relative "
