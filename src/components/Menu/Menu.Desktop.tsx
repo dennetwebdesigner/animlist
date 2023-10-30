@@ -27,7 +27,7 @@ export default function MenuDesktop(props: any) {
     <>
       <header className="flex w-full md:h-14 p-2 px-6 justify-between items-center ">
         <h1
-          className="font-bold font-sans text-2xl"
+          className="font-bold font-sans text-2xl cursor-pointer"
           onClick={() => router.push("/")}
         >
           Minha Lista PI
@@ -95,7 +95,8 @@ export default function MenuDesktop(props: any) {
                 </Link>
               </p>
             )}
-               <p className="my-4 mx-2 ml-5 w-full">
+            {user && (
+              <p className="my-4 mx-2 ml-5 w-full">
                 <Link
                   href="/configuracoes"
                   className="hover:text-slate-200 text-2xl md:text-2xl "
