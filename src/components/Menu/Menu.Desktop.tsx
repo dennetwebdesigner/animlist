@@ -95,6 +95,15 @@ export default function MenuDesktop(props: any) {
                 </Link>
               </p>
             )}
+               <p className="my-4 mx-2 ml-5 w-full">
+                <Link
+                  href="/configuracoes"
+                  className="hover:text-slate-200 text-2xl md:text-2xl "
+                >
+                  Configurar Conta
+                </Link>
+              </p>
+            )}
             {user && (
               <p
                 className="my-4 px-2 hover:text-slate-200 text-2xl md:text-2xl  cursor-pointer"
