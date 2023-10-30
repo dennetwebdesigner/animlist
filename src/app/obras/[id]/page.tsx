@@ -130,7 +130,6 @@ export default function workId({ params }: { params: { id: string } }) {
     commet_by_work(decodeURI(params.id))
       .then((data: any) => {
         if (comments.length <= 0) {
-          console.log(data);
           setComments(data);
         }
       })
@@ -141,7 +140,7 @@ export default function workId({ params }: { params: { id: string } }) {
     if (workItem.name != "" && user && user.uid != "") {
       has_work_my_list();
     }
-  }, [workItem, user]);
+  }, [workItem, user, comments]);
 
   return (
     <main className="w-full flex flex-wrap h-screen overflow-y-auto justify-center">
