@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 export default function CardWork({
   item,
 }: {
-  item: workItemType & { i: number };
+  item: workItemType & { i: any };
 }) {
   const router = useRouter();
 

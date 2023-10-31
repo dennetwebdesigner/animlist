@@ -10,16 +10,17 @@ import MenuDesktop from "@/components/Menu/Menu.Desktop";
 import { workItemType } from "@/functions/Works/GetWork";
 import { timerSearchInput } from "@/functions/Works/timerSearchInput";
 import CardWork from "@/components/Work/Card";
+import { WorkState } from "@/store/WorkState";
 
 export default function my_list() {
-  const [all_works, setAllWorks] = useState<any[]>([]);
-  const router = useRouter();
   const [user, setUser] = useState<any>({});
   const [merge, setMerge] = useState<workItemType[]>([]);
 
   const [search, setSearch] = useState<string>("");
   const [timer, setTimer] = useState<any>();
   const [searchWorks, setSearchWork] = useState<workItemType[]>([]);
+
+  const { state: workState } = WorkState;
 
   useEffect(() => {
     timerSearchInput({
@@ -33,16 +34,6 @@ export default function my_list() {
 
   useEffect(() => {
     get_user_info(setUser);
-    get_all_data()
-      .then((data) => {
-        setAllWorks(data);
-      })
-      .catch((error) => {
-        alert(
-          "Ocorreu um erro, por favor espere algum momento, ou entre em contato com o desenvolvedor!"
-        );
-        console.log(error);
-      });
   }, []);
 
   useEffect(() => {
@@ -53,7 +44,7 @@ export default function my_list() {
         if (data != null) {
           for (let index = 0; index < data.length; index++) {
             const element = data[index];
-            const workInArray = all_works as any[];
+            const workInArray = workState.value as any[];
             const item = workInArray.find(
               (converted) => element.name == converted.name
             );
@@ -74,7 +65,7 @@ export default function my_list() {
         }
       });
     }
-  }, [user, all_works]);
+  }, [user, workState.value]);
 
   return (
     <main className="w-full min-h-screen">
