@@ -31,7 +31,7 @@ export async function createWork(data: {
 export const get_all_data = async () => {
   const refsnapshot = (await get(ref(database, "stores"))).val();
   const snapshot = Object.keys(refsnapshot).map((item) => {
-    return refsnapshot[item];
+    return { ...refsnapshot[item], id: item };
   });
   return snapshot;
 };

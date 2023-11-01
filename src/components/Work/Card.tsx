@@ -5,10 +5,9 @@ import { useRouter } from "next/navigation";
 export default function CardWork({
   item,
 }: {
-  item: workItemType & { i: any };
+  item: workItemType & { i: any; id: string };
 }) {
   const router = useRouter();
-
   return (
     <section
       key={item.i}
@@ -16,7 +15,7 @@ export default function CardWork({
     >
       <article className="bg-slate-800 flex justify-between p-2">
         <h3 className="">
-          <Link href={`/obras/${item.name}`}>{item.name}</Link>
+          <Link href={`/obras/${item.id}`}>{item.name}</Link>
         </h3>
       </article>
       <article className="w-full md:flex">
@@ -25,7 +24,7 @@ export default function CardWork({
           alt={`cover work ${item.name}`}
           className="w-8/12  h-full object-cover p-1 mx-auto block md:w-2/12"
           onClick={() => {
-            router.push(`/obras/${item.name}`);
+            router.push(`/obras/${item.id}`);
           }}
         />
         <details className="w-full my-4 block md:hidden">
