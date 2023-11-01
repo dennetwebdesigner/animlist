@@ -1,7 +1,7 @@
 "use client";
 import { workItemType } from "@/functions/Works/GetWork";
 import MenuAdmin from "../Menu/MenuAdmin";
-import { workState } from "@/store/WorkState";
+// import { workState } from "@/store/WorkState";
 import { BiSolidEdit } from "react-icons/bi";
 import { BsTrash } from "react-icons/bs";
 import { useRouter } from "next/navigation";
@@ -81,13 +81,13 @@ export default function AdminDashboard() {
             <div className="flex w-full justify-between px-2 items-center">
               <h3 className="text-center py-2">Obras Painel</h3>
               <p>
-                {work.selectState().length < 10
-                  ? `0${work.selectState().length}`
-                  : work.selectState().length}
+                {work.state.length < 10
+                  ? `0${work.state.length}`
+                  : work.state.length}
               </p>
             </div>
             <Row />
-            {work.selectState().map((work: workItemType, i: number) => {
+            {work.state.map((work: workItemType, i: number) => {
               return <Row key={i} name={work.name} action={{}} />;
             })}
           </div>
