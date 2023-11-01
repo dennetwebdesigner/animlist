@@ -6,8 +6,6 @@ import { BiSolidEdit } from "react-icons/bi";
 import { BsTrash } from "react-icons/bs";
 import { useRouter } from "next/navigation";
 
-const { selectState: stateWork } = workState;
-
 function Button({
   callback,
   title,
@@ -59,6 +57,8 @@ function Row(props: any) {
 }
 
 export default function AdminDashboard() {
+  const { selectState: stateWork } = workState;
+
   return (
     <section className="w-full h-screen">
       <MenuAdmin />
