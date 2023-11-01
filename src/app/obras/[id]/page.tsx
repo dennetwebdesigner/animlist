@@ -69,7 +69,7 @@ export default function workId({ params }: { params: { id: string } }) {
   }
 
   useEffect(() => {
-    if (!profile.name && user!.uid) {
+    if (!profile.name && user && user!.uid) {
       profile_by_id(user!.uid)
         .then((data) => {
           if (data) {
@@ -311,7 +311,9 @@ export default function workId({ params }: { params: { id: string } }) {
             Necessario estar logado e/ou com o nome configurado para poder
             comentar -{" "}
             <span className="text-red-500">
-              <Link href="/configuracoes">configure aqui!</Link>
+              <Link href={!user && !user?.uid ? "/entrar" : "/configuracoes"}>
+                {!user && !user?.uid ? "Entrar" : "/configurar conta"}!
+              </Link>
             </span>
           </p>
         )}

@@ -1,4 +1,5 @@
 "use client";
+import AdminDashboard from "@/components/Admin/Dashboard";
 import { AdminSystemValidate } from "@/functions/Auth/AdminSystem";
 import { get_user_info } from "@/functions/Auth/googleProvider";
 import { useRouter } from "next/navigation";
@@ -19,5 +20,5 @@ export default function () {
     }
   }, [user, role]);
 
-  return <>{role && <h2>Ala administrativa</h2>}</>;
+  return <>{role && <AdminDashboard />}</>;
 }

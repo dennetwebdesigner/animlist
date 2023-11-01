@@ -6,17 +6,14 @@ import {
 import { auth } from "@/config/firebase";
 import { set_item } from "../Utils/storage";
 
-
 const provider = new GoogleAuthProvider();
 provider.addScope("https://www.googleapis.com/auth/contacts.readonly");
 auth.languageCode = "pt";
 
-
-
-export function get_user_info(callback:Function){
-    onAuthStateChanged(auth, (currentUser:any) => {
-        callback(currentUser)
-      });
+export function get_user_info(callback: Function) {
+  onAuthStateChanged(auth, (currentUser: any) => {
+    callback(currentUser);
+  });
 }
 
 export async function authWithGoogle(callback: Function) {
@@ -28,7 +25,7 @@ export async function authWithGoogle(callback: Function) {
       // The signed-in user info.
       const user = result.user;
       set_item("token", token);
-      callback("/");
+      callback();
       // IdP data available using getAdditionalUserInfo(result)
       // ...
     })

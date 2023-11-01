@@ -19,13 +19,13 @@ class WorkState {
   }
 
   selectState(): workItemType[] {
-    const state = get_item(this.name);
+    const state = get_item("work");
     return !state ? [] : state;
   }
 
-  private async get_all_work() {
+  private async get_all_work(): Promise<void> {
     const data = await get_all_data();
-    this.state = data;
+    set_item("work", data);
   }
 }
 
