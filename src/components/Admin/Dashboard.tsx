@@ -4,7 +4,6 @@ import MenuAdmin from "../Menu/MenuAdmin";
 import { BiSolidEdit } from "react-icons/bi";
 import { BsTrash } from "react-icons/bs";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
 import { useStoreContext } from "@/store/StoreContext";
 function Button({
   callback,
