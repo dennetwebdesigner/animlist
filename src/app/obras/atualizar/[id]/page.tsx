@@ -84,7 +84,7 @@ export default function updateWork({ params }: { params: { id: string } }) {
 
       try {
         await updateDB({
-          id: backup.id,
+          id: decodeURI(params.id),
           description: description.value,
           name: name.value,
           link: link.value,
@@ -122,7 +122,7 @@ export default function updateWork({ params }: { params: { id: string } }) {
         getDownloadURL(uploadTask.snapshot.ref).then(async (url: any) => {
           setImage(url);
           await updateDB({
-            id: backup.id,
+            id: decodeURI(params.id),
             description: description.value,
             name: name.value,
             link: link.value,
