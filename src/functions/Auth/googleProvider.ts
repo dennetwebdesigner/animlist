@@ -4,7 +4,6 @@ import {
   onAuthStateChanged,
 } from "firebase/auth";
 import { auth } from "@/config/firebase";
-import { set_item } from "../Utils/storage";
 
 const provider = new GoogleAuthProvider();
 provider.addScope("https://www.googleapis.com/auth/contacts.readonly");
@@ -24,7 +23,6 @@ export async function authWithGoogle(callback: Function) {
       const token = credential?.accessToken;
       // The signed-in user info.
       const user = result.user;
-      set_item("token", token);
       callback();
       // IdP data available using getAdditionalUserInfo(result)
       // ...
