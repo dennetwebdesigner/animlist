@@ -10,7 +10,7 @@ import MenuDesktop from "@/components/Menu/Menu.Desktop";
 import { workItemType } from "@/functions/Works/GetWork";
 import { timerSearchInput } from "@/functions/Works/timerSearchInput";
 import CardWork from "@/components/Work/Card";
-import { workState } from "@/store/WorkState";
+import { useStoreContext } from "@/store/StoreContext";
 
 export default function my_list() {
   const [user, setUser] = useState<any>({});
@@ -19,7 +19,7 @@ export default function my_list() {
   const [search, setSearch] = useState<string>("");
   const [timer, setTimer] = useState<any>();
   const [searchWorks, setSearchWork] = useState<workItemType[]>([]);
-
+  const { work } = useStoreContext() as any;
   useEffect(() => {
     timerSearchInput({
       all_works: merge,
@@ -42,7 +42,7 @@ export default function my_list() {
         if (data != null) {
           for (let index = 0; index < data.length; index++) {
             const element = data[index];
-            const workInArray = workState.selectState() as any[];
+            const workInArray = work.state as any[];
             const item = workInArray.find(
               (converted) => element.name == converted.name
             );
@@ -63,13 +63,13 @@ export default function my_list() {
         }
       });
     }
-  }, [user, workState.selectState()]);
+  }, [user, work.state]);
 
   return (
     <main className="w-full min-h-screen">
       <MenuDesktop getSearch={setSearch} />
-      {searchWorks.length <= 0 &&
-        merge.map((item, i) => <CardWork item={{ ...item, i }} />)}
+      {/* {searchWorks.length <= 0 &&
+        merge.map((item, i) => <CardWork item={{ ...item, i }} />)} */}
       {searchWorks.length > 0 &&
         searchWorks.map((item, i) => <CardWork item={{ ...item, i }} />)}
     </main>

@@ -9,9 +9,10 @@ export default function WorkAll() {
   const [timer, setTimer] = useState<any>();
   const [searchWorks, setSearchWork] = useState<workItemType[]>([]);
   const { work } = useStoreContext() as any;
+
   useEffect(() => {
     timerSearchInput({
-      all_works: work.state.value,
+      all_works: work.state,
       search,
       setSearchWork,
       setTimer,
@@ -23,11 +24,9 @@ export default function WorkAll() {
     <main className="w-full min-h-screen">
       <MenuDesktop getSearch={setSearch} />
       {searchWorks.length <= 0 &&
-        work
-          .selectState()
-          .map((item: workItemType, i: number) => (
-            <CardWork key={i} item={{ ...item, i: `w-${i}` }} />
-          ))}
+        work.state.map((item: workItemType, i: number) => (
+          <CardWork key={i} item={{ ...item, i: `w-${i}` }} />
+        ))}
       {searchWorks.length > 0 &&
         searchWorks.map((item, i) => (
           <CardWork key={i} item={{ ...item, i: `s-${i}` }} />
