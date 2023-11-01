@@ -23,6 +23,24 @@ export default function WorkAll() {
   return (
     <main className="w-full min-h-screen">
       <MenuDesktop getSearch={setSearch} />
+
+      <details className="w-full p-4 text-justify">
+        <summary className="text-2xl">Comunicado!</summary>
+        <details>
+          <summary className="text-2xl">01/11/2023</summary>
+          <p className="text-xl">
+            Venho por meio deste me desculpar, no desenvolvimento inicial não me
+            precavi contra um problema classico e isso custou a lista de todos
+            que ja estavam usando.
+          </p>
+          <p className="text-xl">
+            Estaremos criando medidas protetivas para que ninguém venha mais
+            perder suas lista. espero que possam comprrender já que o projeto
+            ainda estava no começo.
+          </p>
+        </details>
+      </details>
+
       {searchWorks.length <= 0 &&
         work.state.map((item: workItemType, i: number) => (
           <CardWork key={i} item={{ ...item, i: `w-${i}` }} />
