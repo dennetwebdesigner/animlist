@@ -2,7 +2,7 @@ import { initializeApp } from "firebase/app";
 import { getStorage } from "firebase/storage";
 import { getAuth, signOut } from "firebase/auth";
 import { getDatabase, ref, set, get } from "firebase/database";
-
+import { v4 } from "uuid";
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_API_KEY,
   authDomain: process.env.NEXT_PUBLIC_AUTH_DOMAIN,
@@ -25,7 +25,7 @@ export async function createWork(data: {
   link: string;
   categories: string[];
 }) {
-  await set(ref(database, "stores/" + data.name), data);
+  await set(ref(database, "stores/" + v4()), data);
 }
 
 export const get_all_data = async () => {

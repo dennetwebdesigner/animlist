@@ -5,6 +5,11 @@ import { BiSolidEdit } from "react-icons/bi";
 import { BsTrash } from "react-icons/bs";
 import { useRouter } from "next/navigation";
 import { useStoreContext } from "@/store/StoreContext";
+import { ref, get, set, update, remove } from "firebase/database";
+import { database } from "@/config/firebase";
+import { v4 } from "uuid";
+let count = 0;
+
 function Button({
   callback,
   title,
@@ -56,11 +61,48 @@ function Row(props: any) {
 }
 
 export default function AdminDashboard() {
+  async function handleChanAll() {
+    const snaprefWorks = (await get(ref(database, "stores/"))).val();
+    const myListWorks = (await get(ref(database, "my-list/"))).val();
+    const commentWorks = (await get(ref(database, "comments-work/"))).val();
+    if (count <= 0) {
+      for (let item in snaprefWorks) {
+        const uuid = v4();
+        snaprefWorks[uuid] = JSON.parse(JSON.stringify(snaprefWorks[item]));
+
+        delete snaprefWorks[item];
+        await remove(ref(database, `stores/${item}`));
+        await set(ref(database, `stores/${uuid}`), snaprefWorks[uuid]);
+
+        for (let itemML in myListWorks) {
+          const test = myListWorks[itemML][item];
+          await remove(ref(database, `my-list/${itemML}/${item}`));
+          await set(
+            ref(database, `my-list/${itemML}/${uuid}`),
+            snaprefWorks[uuid]
+          );
+        }
+
+        for (let itemCW in commentWorks) {
+          const commentsItem = JSON.parse(JSON.stringify(commentWorks[itemCW]));
+          await remove(ref(database, `comments-work/${item}`));
+          await set(ref(database, `comments-work/${uuid}`), commentsItem);
+        }
+
+        console.log(snaprefWorks);
+        count++;
+      }
+    }
+  }
+
   const { work } = useStoreContext() as any;
 
   return (
     <section className="w-full h-screen">
       <MenuAdmin />
+      <button onClick={handleChanAll} className="p-8 text-2xl border">
+        test
+      </button>
 
       <main className="w-full grow">
         <section className="px-4 w-full flex flex-wrap">

@@ -3,6 +3,9 @@
 import WorkAll from "@/components/Work/WorkAll";
 import Head from "next/head";
 
+import { useEffect } from "react";
+
+const works = {};
 export default function Home() {
   return (
     <>
