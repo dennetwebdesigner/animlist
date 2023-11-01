@@ -18,6 +18,7 @@ type User = any;
 
 export default function workId({ params }: { params: { id: string } }) {
   const [workItem, setWorkItem] = useState<workItemType>({
+    id: "",
     description: "",
     img: "",
     link: "",
