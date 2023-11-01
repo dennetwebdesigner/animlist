@@ -34,24 +34,27 @@ export default function my_list() {
     if (user!.uid != "") {
       profile_work_all(user.uid).then((data) => {
         let t: any[] = [];
-        if (data != null && data.length > 0) {
-          for (let index = 0; index < data.length; index++) {
+        if (data) {
+          for (let index = 0; index < data!.length; index++) {
             if (work.state.length > 0) {
-              const element = data[index];
-              const workInArray = work.state as any[];
-              const item = workInArray.find(
-                (converted) => element.name == converted.name
-              );
+              const element = data![index];
+              console.log(element);
+              const item = work.state.find((converted: any) => {
+                return element.name == converted.id;
+              });
+
               if (item) {
                 setMerge((state: any) => {
                   const convertInArray = state as any[];
                   const hasItem = convertInArray.find(
-                    (itemConverted) => itemConverted.name == item.name
+                    (itemConverted) => itemConverted.name == item.id
                   );
                   if (hasItem) {
                     return state;
                   } else {
-                    return [...state, { ...item, ...element }];
+                    const id = item.id;
+                    const name = item.name;
+                    return [...state, { ...item, ...element, name, id }];
                   }
                 });
               }
@@ -65,10 +68,12 @@ export default function my_list() {
   return (
     <main className="w-full min-h-screen">
       <MenuDesktop getSearch={setSearch} />
-      {/* {searchWorks.length <= 0 &&
-        merge.map((item, i) => <CardWork item={{ ...item, i }} />)} */}
+      {searchWorks.length <= 0 &&
+        merge.map((item, i) => <CardWork key={i} item={{ ...item, i }} />)}
       {searchWorks.length > 0 &&
-        searchWorks.map((item, i) => <CardWork item={{ ...item, i }} />)}
+        searchWorks.map((item, i) => (
+          <CardWork key={i} item={{ ...item, i }} />
+        ))}
     </main>
   );
 }
