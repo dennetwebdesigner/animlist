@@ -55,8 +55,9 @@ export default function workId({ params }: { params: { id: string } }) {
   }
 
   function has_work_my_list() {
-    profile_work_by_id(user?.uid as string, workItem.name)
+    profile_work_by_id(user?.uid as string, decodeURI(params.id))
       .then((data) => {
+        console.log(data);
         if (data != null) {
           setCap(data.cap);
           setbackupUpdate({ cap: data.cap });
