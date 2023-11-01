@@ -10,7 +10,7 @@ import MenuDesktop from "@/components/Menu/Menu.Desktop";
 import { workItemType } from "@/functions/Works/GetWork";
 import { timerSearchInput } from "@/functions/Works/timerSearchInput";
 import CardWork from "@/components/Work/Card";
-import { WorkState } from "@/store/WorkState";
+import { workState } from "@/store/WorkState";
 
 export default function my_list() {
   const [user, setUser] = useState<any>({});
@@ -19,8 +19,6 @@ export default function my_list() {
   const [search, setSearch] = useState<string>("");
   const [timer, setTimer] = useState<any>();
   const [searchWorks, setSearchWork] = useState<workItemType[]>([]);
-
-  const { state: workState } = WorkState;
 
   useEffect(() => {
     timerSearchInput({
@@ -44,7 +42,7 @@ export default function my_list() {
         if (data != null) {
           for (let index = 0; index < data.length; index++) {
             const element = data[index];
-            const workInArray = workState.value as any[];
+            const workInArray = workState.selectState() as any[];
             const item = workInArray.find(
               (converted) => element.name == converted.name
             );
@@ -65,7 +63,7 @@ export default function my_list() {
         }
       });
     }
-  }, [user, workState.value]);
+  }, [user, workState.selectState()]);
 
   return (
     <main className="w-full min-h-screen">

@@ -7,20 +7,21 @@ import {
   ReactNode,
   useEffect,
 } from "react";
-import { WorkState } from "./WorkState";
+import { workState } from "./WorkState";
 const storeContext = createContext({});
 
 export function StoreContext({ children }: { children: ReactNode }) {
-  const [work, setWork] = useState<WorkerType[]>([]);
-  const { actions } = WorkState;
-  WorkState.setState(work, setWork);
+  const work = workState.selectState();
+  const { methods } = workState;
 
   useEffect(() => {
-    if (work.length <= 0) actions.get_all_work();
+    if (work.length <= 0) {
+      methods.get_all_work();
+    }
   }, [work]);
 
   return (
-    <storeContext.Provider value={{ [WorkState.name]: WorkState }}>
+    <storeContext.Provider value={{ [workState.name]: workState }}>
       {children}
     </storeContext.Provider>
   );
