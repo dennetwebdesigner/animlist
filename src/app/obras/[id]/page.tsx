@@ -90,7 +90,7 @@ export default function workId({ params }: { params: { id: string } }) {
     }
 
     try {
-      await myListStore({ cap: cap as number, work_id: workItem.name });
+      await myListStore({ cap: cap as number, work_id: decodeURI(params.id) });
       const alertMessage =
         hasWork == "Adicionar"
           ? "capitulo adicionado com sucesso a sua lista!"
