@@ -28,6 +28,19 @@ export async function createWork(data: {
   await set(ref(database, "stores/" + v4()), data);
 }
 
+export async function updateWork(data: {
+  id: string;
+  img: string;
+  name: string;
+  description: string;
+  link: string;
+  categories: string[];
+}) {
+  const updated = JSON.parse(JSON.stringify(data));
+  delete updated["id"];
+  await set(ref(database, "stores/" + data.id), updated);
+}
+
 export const get_all_data = async () => {
   const refsnapshot = (await get(ref(database, "stores"))).val();
   const snapshot = Object.keys(refsnapshot).map((item) => {

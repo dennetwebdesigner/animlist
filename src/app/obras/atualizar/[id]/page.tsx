@@ -1,10 +1,11 @@
 "use client";
 import { useEffect, useState } from "react";
-import { createWork, storage } from "@/config/firebase";
+import { updateWork as updateDB, storage } from "@/config/firebase";
 import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 import { works_by_id } from "@/repository/WorkRepository";
 import { useRouter } from "next/navigation";
 import MenuDesktop from "@/components/Menu/Menu.Desktop";
+import { workItemType } from "@/functions/Works/GetWork";
 
 type WorkType = {
   img: string;
@@ -18,14 +19,16 @@ export default function updateWork({ params }: { params: { id: string } }) {
   const [progress, setProgress] = useState<number>(0);
   const [useLink, setUseLink] = useState<boolean>(false);
   const [categorySelect, setCategorySelect] = useState<string[]>([]);
-  const [backup, setBackup] = useState<WorkType>({
+  const [backup, setBackup] = useState<workItemType>({
+    id: "",
     img: "",
     name: "",
     description: "",
     link: "",
     categories: [],
   });
-  const [work, setWork] = useState<WorkType>({
+  const [work, setWork] = useState<workItemType>({
+    id: "",
     img: "",
     name: "",
     description: "",
@@ -41,7 +44,7 @@ export default function updateWork({ params }: { params: { id: string } }) {
   useEffect(() => {
     if (params.id.length > 0 && work.name.length <= 0) {
       setParam(decodeURI(params.id));
-      works_by_id(decodeURI(params.id)).then((data: WorkType) => {
+      works_by_id(decodeURI(params.id)).then((data: workItemType) => {
         setBackup(data);
         setWork(data);
         if (data.categories) setCategorySelect(data.categories);
@@ -80,7 +83,8 @@ export default function updateWork({ params }: { params: { id: string } }) {
       }
 
       try {
-        await createWork({
+        await updateDB({
+          id: backup.id,
           description: description.value,
           name: name.value,
           link: link.value,
@@ -117,7 +121,8 @@ export default function updateWork({ params }: { params: { id: string } }) {
       () => {
         getDownloadURL(uploadTask.snapshot.ref).then(async (url: any) => {
           setImage(url);
-          await createWork({
+          await updateDB({
+            id: backup.id,
             description: description.value,
             name: name.value,
             link: link.value,
@@ -154,7 +159,6 @@ export default function updateWork({ params }: { params: { id: string } }) {
             autoComplete="off"
             type="text"
             name="name"
-            disabled={true}
             value={work.name}
             onChange={(e) => {
               setWork((state) => {
