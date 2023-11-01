@@ -14,10 +14,12 @@ export async function myListStore(data: { cap: number; work_id: string }) {
 
 export async function profile_work_all(user_id: string) {
   const refsnapshot = (await get(ref(database, `my-list/${user_id}`))).val();
-  const snapshot = Object.keys(refsnapshot).map((item) => {
-    return { ...refsnapshot[item], name: item };
-  });
-  return snapshot;
+  if (refsnapshot) {
+    const snapshot = Object.keys(refsnapshot).map((item) => {
+      return { ...refsnapshot[item], name: item };
+    });
+    return snapshot;
+  } else return null;
 }
 
 export async function profile_work_by_id(user_id: string, work_id: string) {
