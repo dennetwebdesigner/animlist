@@ -5,7 +5,8 @@ import { workState } from "@/store/WorkState";
 import { BiSolidEdit } from "react-icons/bi";
 import { BsTrash } from "react-icons/bs";
 import { useRouter } from "next/navigation";
-
+import { useEffect, useState } from "react";
+import { useStoreContext } from "@/store/StoreContext";
 function Button({
   callback,
   title,
@@ -57,7 +58,8 @@ function Row(props: any) {
 }
 
 export default function AdminDashboard() {
-  const { selectState: stateWork } = workState;
+  const { selectState } = workState;
+  const { work } = useStoreContext() as any;
 
   return (
     <section className="w-full h-screen">
@@ -80,13 +82,13 @@ export default function AdminDashboard() {
             <div className="flex w-full justify-between px-2 items-center">
               <h3 className="text-center py-2">Obras Painel</h3>
               <p>
-                {stateWork().length < 10
-                  ? `0${stateWork().length}`
-                  : stateWork().length}
+                {work.selectState().length < 10
+                  ? `0${work.selectState().length}`
+                  : work.selectState().length}
               </p>
             </div>
             <Row />
-            {stateWork().map((work: workItemType, i: number) => {
+            {work.selectState().map((work: workItemType, i: number) => {
               return <Row key={i} name={work.name} action={{}} />;
             })}
           </div>
