@@ -7,7 +7,7 @@ import {
   ReactNode,
   useEffect,
 } from "react";
-import { WorkState, setWorkState } from "./WorkState";
+import { WorkState } from "./WorkState";
 import { workItemType } from "@/functions/Works/GetWork";
 const storeContext = createContext({});
 
