@@ -16,8 +16,10 @@ export const WorkState = {
   },
   actions: {
     get_all_work: async () => {
-      const data = await get_all_data();
-      if (WorkState.set) WorkState.set(data as any);
+      const works = await fetch("http://localhost:3000/api/works");
+      const data = await works.json();
+
+      if (WorkState.set && data) WorkState.set(data as any);
     },
   },
 };

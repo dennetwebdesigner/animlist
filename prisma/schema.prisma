@@ -9,7 +9,22 @@ datasource db {
 
 model User {
   id        String   @id @default(uuid())
-  email_id  String
+  email_id  String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  Profile   Profile?
+  List      List[]
+  Role      Role[]
+}
+
+model Profile {
+  id        String   @id @default(uuid())
+  user      User     @relation(fields: [userEmail], references: [email_id], onDelete: Cascade, onUpdate: Cascade)
+  userEmail String   @unique
+  photo     String
+  cover     String
+  name      String
+  age       Int
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
@@ -22,4 +37,25 @@ model Store {
   categories  String
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+  List        List[]
+}
+
+model List {
+  id        String   @id @default(uuid())
+  cap       Int
+  user      User     @relation(fields: [emailId], references: [email_id], onDelete: Cascade, onUpdate: Cascade)
+  emailId   String
+  store     Store    @relation(fields: [storeId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  storeId   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Role {
+  id        String   @id @default(uuid())
+  type      String
+  user      User     @relation(fields: [emailId], references: [email_id], onDelete: Cascade, onUpdate: Cascade)
+  emailId   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
