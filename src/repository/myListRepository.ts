@@ -1,15 +1,20 @@
 import { database } from "@/config/firebase";
-import { get_user_info } from "@/functions/Auth/googleProvider";
-import { dateNow } from "@/functions/Utils/dateNow";
-import { set, ref, get } from "firebase/database";
+import { requestApi } from "@/functions/Utils/commom";
 
-export async function myListStore(data: { cap: number; work_id: string }) {
-  get_user_info(async function (user: any) {
-    await set(ref(database, `my-list/${user!.uid}/${data.work_id}`), {
-      cap: data.cap,
-      last_update: dateNow(),
-    });
-  });
+import { ref, get } from "firebase/database";
+
+export async function list_create(data: {
+  cap: number;
+  emailId: string;
+  storeId: string;
+}) {
+  const response = await requestApi({ url: `list`, method: "POST", data });
+  return response;
+}
+
+export async function list_update(data: { cap: number; id: number }) {
+  const response = await requestApi({ url: `list`, method: "PUT", data });
+  return response;
 }
 
 export async function profile_work_all(user_id: string) {

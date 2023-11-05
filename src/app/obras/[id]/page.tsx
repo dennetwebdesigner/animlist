@@ -1,7 +1,11 @@
 "use client";
 import { get_user_info } from "@/functions/Auth/googleProvider";
 import { get_work, workItemType } from "@/functions/Works/GetWork";
-import { myListStore, profile_work_by_id } from "@/repository/myListRepository";
+import {
+  list_create,
+  list_update,
+  profile_work_by_id,
+} from "@/repository/myListRepository";
 import { useEffect, useState } from "react";
 import ModalUpdateWork from "@/components/modalUpdateWork";
 import MenuDesktop from "@/components/Menu/Menu.Desktop";
@@ -13,17 +17,20 @@ import {
 } from "@/repository/CommentsRepository";
 import { profile_by_id } from "@/repository/ProfileRepository";
 import Link from "next/link";
+import { WorkState } from "@/store/WorkState";
+import { works_by_id, works_by_user_list } from "@/repository/WorkRepository";
 
 type User = any;
 
 export default function workId({ params }: { params: { id: string } }) {
-  const [workItem, setWorkItem] = useState<workItemType>({
+  const [workItem, setWorkItem] = useState<any>({
     id: "",
     description: "",
     img: "",
-    link: "",
     name: "",
     categories: [],
+    list_id: null,
+    cap: null,
   });
   const [user, setUser] = useState<User>({});
   const [cap, setCap] = useState<number | null>(null);
@@ -48,41 +55,42 @@ export default function workId({ params }: { params: { id: string } }) {
   const [comments, setComments] = useState<any[]>([]);
   const [commentInput, setCommentInput] = useState("");
 
-  async function handleGetWork() {
-    const id: string = decodeURI(params.id);
-    const wi = await get_work(id);
-    setWorkItem(wi);
-  }
+  // async function handleGetWork() {
+  //   const id: string = decodeURI(params.id);
+  //   const wi = await get_work(id);
+  //   setWorkItem(wi);
+  //   console.log(wi)
+  // }
 
-  function has_work_my_list() {
-    profile_work_by_id(user?.uid as string, decodeURI(params.id))
-      .then((data) => {
-        console.log(data);
-        if (data != null) {
-          setCap(data.cap);
-          setbackupUpdate({ cap: data.cap });
-          setTimestamp(data.last_update);
-        }
-        setHasWork(data == null ? "Adicionar" : "Atualizar");
-      })
-      .catch((d) => {
-        console.log(d);
-      });
-  }
+  // function has_work_my_list() {
+  //   profile_work_by_id(user?.uid as string, decodeURI(params.id))
+  //     .then((data) => {
+  //       console.log(data);
+  //       if (data != null) {
+  //         setCap(data.cap);
+  //         setbackupUpdate({ cap: data.cap });
+  //         setTimestamp(data.last_update);
+  //       }
+  //       setHasWork(data == null ? "Adicionar" : "Atualizar");
+  //     })
+  //     .catch((d) => {
+  //       console.log(d);
+  //     });
+  // }
 
-  useEffect(() => {
-    if (!profile.name && user && user!.uid) {
-      profile_by_id(user!.uid)
-        .then((data) => {
-          if (data) {
-            setProfile(data!);
-          }
-        })
-        .catch((error) => {
-          console.log(error);
-        });
-    }
-  }, [user]);
+  // useEffect(() => {
+  //   if (!profile.name && user && user!.uid) {
+  //     profile_by_id(user!.uid)
+  //       .then((data) => {
+  //         if (data) {
+  //           setProfile(data!);
+  //         }
+  //       })
+  //       .catch((error) => {
+  //         console.log(error);
+  //       });
+  //   }
+  // }, [user]);
 
   async function handleSubmit() {
     if (cap == null) {
@@ -91,12 +99,33 @@ export default function workId({ params }: { params: { id: string } }) {
     }
 
     try {
-      await myListStore({ cap: cap as number, work_id: decodeURI(params.id) });
+      console.log(workItem);
+
+      if (!workItem?.cap && cap != null && cap > 0) {
+        const listStore = await list_create({
+          cap,
+          emailId: user?.email,
+          storeId: params.id,
+        });
+        setHasWork("Atualizar");
+        setWorkItem((state: any) => {
+          return { ...state, id_list: listStore.id, cap: cap };
+        });
+      } else if (workItem.cap && cap > 0) {
+        await list_update({
+          cap: cap as number,
+          id: workItem!.id_list,
+        });
+        setWorkItem((state: any) => {
+          return { ...state, cap: cap };
+        });
+      }
+
       const alertMessage =
         hasWork == "Adicionar"
           ? "capitulo adicionado com sucesso a sua lista!"
           : "capitulo atualizado com sucesso!";
-      has_work_my_list();
+      // has_work_my_list();
       alert(alertMessage);
     } catch (error) {
       console.log(error);
@@ -127,22 +156,43 @@ export default function workId({ params }: { params: { id: string } }) {
   }
 
   useEffect(() => {
-    get_user_info(setUser);
-    handleGetWork();
-    commet_by_work(decodeURI(params.id))
-      .then((data: any) => {
-        if (comments.length <= 0) {
-          setComments(data);
+    if (user || user?.uid) get_user_info(setUser);
+    // works_by_id(params.id).then((workData) => {
+    //   if (workData) setWorkItem(workData);
+    // });
+    console.log(user);
+    works_by_user_list(params.id, user?.email).then((workData) => {
+      let id_list = null;
+      let capData = null;
+      if (workData) {
+        if (workData.List.length == 1) {
+          setCap(workData.List[0].cap);
+          setHasWork("Atualizar");
+          id_list = workData.List[0].id;
+          capData = workData.List[0].cap;
         }
-      })
-      .catch((error) => console.log(error));
-  }, []);
 
-  useEffect(() => {
-    if (workItem.name != "" && user && user.uid != "") {
-      has_work_my_list();
-    }
-  }, [workItem, user, comments]);
+        delete workData.List;
+
+        setWorkItem({ ...workData, id_list, cap: capData });
+      }
+    });
+
+    // handleGetWork();
+    // commet_by_work(decodeURI(params.id))
+    //   .then((data: any) => {
+    //     if (comments.length <= 0) {
+    //       setComments(data);
+    //     }
+    //   })
+    //   .catch((error) => console.log(error));
+  }, [user]);
+
+  // useEffect(() => {
+  //   if (workItem.name != "" && user && user.uid != "") {
+  //     has_work_my_list();
+  //   }
+  // }, [workItem, user, comments]);
 
   return (
     <main className="w-full flex flex-wrap h-screen overflow-y-auto justify-center">
@@ -158,8 +208,8 @@ export default function workId({ params }: { params: { id: string } }) {
         <article className="flex flex-wrap">
           <div className="sm:w-full md:w-3/6 ">
             <h2 className="text-slate-400">Nome da Obra</h2>
-            <h3>{workItem.name}</h3>
-            <img src={workItem.img} alt="" className="w-screen mx auto px-2" />
+            <h3>{workItem?.name}</h3>
+            <img src={workItem?.img} alt="" className="w-screen mx auto px-2" />
           </div>
 
           {user && (
@@ -228,11 +278,11 @@ export default function workId({ params }: { params: { id: string } }) {
             </div>
           )}
         </article>
-        <p className="w-full text-justify">{workItem.description}</p>
+        <p className="w-full text-justify">{workItem?.description}</p>
       </section>
 
       {/* COMMENTS CONTAINER */}
-      <section className="w-full pt-6 md:pt-0 md:w-4/12 h-[70vh] md:border-l md:border-l-50 ml-1 ">
+      {/* <section className="w-full pt-6 md:pt-0 md:w-4/12 h-[70vh] md:border-l md:border-l-50 ml-1 ">
         <h3 className="h-[8%] text-xl pl-2">Comentários</h3>
 
         <section className="h-[84%] w-full p-1">
@@ -290,10 +340,10 @@ export default function workId({ params }: { params: { id: string } }) {
                 </div>
               );
             })}
-        </section>
+        </section> */}
 
-        {/* FORM COMMENT */}
-        {profile!.name && (
+      {/* FORM COMMENT */}
+      {/* {profile!.name && (
           <div className="w-full h-[8%]">
             <input
               className="h-full w-10/12 text-black px-2"
@@ -319,7 +369,7 @@ export default function workId({ params }: { params: { id: string } }) {
             </span>
           </p>
         )}
-      </section>
+      </section> */}
     </main>
   );
 }

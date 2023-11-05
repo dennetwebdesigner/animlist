@@ -1,8 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
-import { updateWork as updateDB, storage } from "@/config/firebase";
-import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
-import { works_by_id } from "@/repository/WorkRepository";
+import { works_by_id, works_update } from "@/repository/WorkRepository";
 import { useRouter } from "next/navigation";
 import MenuDesktop from "@/components/Menu/Menu.Desktop";
 import { workItemType } from "@/functions/Works/GetWork";
@@ -11,13 +9,10 @@ type WorkType = {
   img: string;
   name: string;
   description: string;
-  link: string;
+
   categories: string[];
 };
 export default function updateWork({ params }: { params: { id: string } }) {
-  const [img, setImage] = useState<string>();
-  const [progress, setProgress] = useState<number>(0);
-  const [useLink, setUseLink] = useState<boolean>(false);
   const [categorySelect, setCategorySelect] = useState<string[]>([]);
   const [backup, setBackup] = useState<workItemType>({
     id: "",
@@ -35,109 +30,58 @@ export default function updateWork({ params }: { params: { id: string } }) {
     link: "",
     categories: [],
   });
-  const [displayInput, setDisplayInput] = useState({
-    linkImage: "none",
-    updateImage: "block",
-  });
+
   const [param, setParam] = useState<string>("");
   const router = useRouter();
   useEffect(() => {
     if (params.id.length > 0 && work.name.length <= 0) {
       setParam(decodeURI(params.id));
       works_by_id(decodeURI(params.id)).then((data: workItemType) => {
-        setBackup(data);
-        setWork(data);
-        if (data.categories) setCategorySelect(data.categories);
+        if (data) {
+          console.log(data);
+          setBackup(data);
+          setWork(data);
+          if (data.categories) setCategorySelect(data.categories);
+        }
       });
     }
   }, []);
 
-  useEffect(() => {
-    if (useLink) setDisplayInput({ linkImage: "block", updateImage: "none" });
-    else setDisplayInput({ linkImage: "none", updateImage: "block" });
-  }, [useLink]);
-
   const handleASubmit = async (e: any) => {
     e.preventDefault();
 
-    const file = e.target.elements.image.files[0];
     const name = e.target.elements.name;
     const description = e.target.elements.description;
-    const link = e.target.elements.link;
     const link_img = e.target.elements.link_img;
 
     if (
-      !link.value ||
       !name.value ||
       !description.value ||
-      categorySelect.length <= 0
+      categorySelect.length <= 0 ||
+      !link_img.value
     ) {
       alert("Preencha todos os campos corretamente");
       return;
     }
 
-    if (useLink) {
-      if (!link_img.value) {
-        alert("Preencha todos os campos corretamente");
-        return;
-      }
-
-      try {
-        await updateDB({
-          id: decodeURI(params.id),
-          description: description.value,
-          name: name.value,
-          link: link.value,
-          img: link_img.value,
-          categories: categorySelect,
-        });
-        alert("salvo com sucesso");
-        window.location.reload();
-      } catch (error) {
-        console.log(error);
-      }
-
-      return;
-    }
-
-    if (!file) {
+    if (!link_img.value) {
       alert("Preencha todos os campos corretamente");
       return;
     }
 
-    const storageRef = ref(storage, `imgs/${file.name}`);
-    const uploadTask = uploadBytesResumable(storageRef, file);
-
-    uploadTask.on(
-      "state_changed",
-      (snapshot: any) => {
-        const progress =
-          (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-        setProgress(progress);
-      },
-      (error: any) => {
-        alert(error);
-      },
-      () => {
-        getDownloadURL(uploadTask.snapshot.ref).then(async (url: any) => {
-          setImage(url);
-          await updateDB({
-            id: decodeURI(params.id),
-            description: description.value,
-            name: name.value,
-            link: link.value,
-            img: url,
-            categories: categorySelect,
-          })
-            .then((data) => {
-              console.log(data);
-            })
-            .catch((error) => {
-              console.log(error);
-            });
-        });
-      }
-    );
+    try {
+      const data = {
+        description: description.value,
+        name: name.value,
+        img: link_img.value,
+        categories: JSON.stringify(categorySelect),
+      };
+      await works_update(decodeURI(params.id), data);
+      alert("salvo com sucesso");
+      window.location.reload();
+    } catch (error) {
+      console.log(error);
+    }
   };
   return (
     <>
@@ -191,26 +135,6 @@ export default function updateWork({ params }: { params: { id: string } }) {
             className="w-full mb-[3px] font-sans text-light text-[1.2em] "
             htmlFor=""
           >
-            Link de onde você lê:{" "}
-          </label>
-          <input
-            className="w-full p-1 text-slate-600 outline-none"
-            autoComplete="off"
-            type="text"
-            name="link"
-            value={work.link}
-            onChange={(e) => {
-              setWork((state) => {
-                return { ...state, link: e.target.value };
-              });
-            }}
-          />
-        </fieldset>
-        <fieldset className="w-full my-[10px]">
-          <label
-            className="w-full mb-[3px] font-sans text-light text-[1.2em] "
-            htmlFor=""
-          >
             Categorias
           </label>
           <select
@@ -225,14 +149,15 @@ export default function updateWork({ params }: { params: { id: string } }) {
             className="w-full text-slate-800 py-2 text-lg"
           >
             <option value="Romance">Romance</option>
+            <option value="Comedia">Comédia</option>
             <option value="Aventura">Aventura</option>
-            <option value="Ação">Ação</option>
-            <option value="Mangá">Mangá</option>
+            <option value="Acao">Ação</option>
+            <option value="Manga">Mangá</option>
             <option value="Manhwa">Manhwa</option>
             <option value="Manhua">Manhua</option>
             <option value="Webtoon">Webtoon</option>
             <option value="Livro">Livro</option>
-            <option value="Série">Série</option>
+            <option value="Serie">Série</option>
             <option value="Anime">Anime</option>
             <option value="Misterio">Misterio</option>
             <option value="Terror">Terror</option>
@@ -273,12 +198,6 @@ export default function updateWork({ params }: { params: { id: string } }) {
           </div>
         </fieldset>
         <fieldset className="w-full my-[10px]">
-          <input
-            className="p-1 text-slate-600 outline-none"
-            type="checkbox"
-            name="link_img_box"
-            onChange={() => setUseLink(!useLink)}
-          />
           <label
             className="w-full mb-[3px] font-sans text-light text-[1.2em] "
             htmlFor=""
@@ -286,7 +205,6 @@ export default function updateWork({ params }: { params: { id: string } }) {
             usar link da imagem:
           </label>
           <input
-            style={{ display: displayInput.linkImage }}
             className="w-full p-1 text-slate-600 outline-none"
             autoComplete="off"
             type="text"
@@ -299,30 +217,17 @@ export default function updateWork({ params }: { params: { id: string } }) {
             }}
           />
         </fieldset>
-        <fieldset
-          className="w-full my-[10px]"
-          style={{ display: displayInput.updateImage }}
-        >
-          <label
-            className="w-full mb-[3px] font-sans text-light text-[1.2em] "
-            htmlFor=""
+
+        <fieldset className="w-full md:flex md:justify-end">
+          <button
+            type="submit"
+            className="w-full py-3 mt-3 rounded-md text-xl  bg-orange-400 md:w-3/12"
           >
-            Imagem:{" "}
-          </label>
-          <input
-            className="w-full p-1 text-slate-600 outline-none"
-            autoComplete="off"
-            type="file"
-            name="image"
-          />
-          {!img && (
-            <progress value={progress} max="100" className="progress-bar" />
-          )}
+            Salvar
+          </button>
         </fieldset>
-        <button type="submit">Salvar</button>
       </form>
       <br />
-      {img && <img src={img} alt="image" />}
     </>
   );
 }

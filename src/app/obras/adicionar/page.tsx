@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import { createWork, storage } from "@/config/firebase";
 import MenuDesktop from "@/components/Menu/Menu.Desktop";
-import { works_store } from "@/repository/WorkRepository";
+import { works_by_name, works_store } from "@/repository/WorkRepository";
 
 export default function work() {
   const [img, setImage] = useState<string>();
@@ -17,24 +17,31 @@ export default function work() {
 
     const link_img = e.target.elements.link_img;
 
-    // if (
-    //   !name.value ||
-    //   !description.value ||
-    //   categorySelect.length <= 0 ||
-    //   !link_img.value
-    // ) {
-    //   alert("Preencha todos os campos corretamente");
-    //   return;
-    // }
+    if (
+      !name.value ||
+      !description.value ||
+      categorySelect.length <= 0 ||
+      !link_img.value
+    ) {
+      alert("Preencha todos os campos corretamente");
+      return;
+    }
     try {
+      const hasWork = await works_by_name(name.value);
+
+      if (hasWork && hasWork.name) {
+        alert("Essa obra Já existe!");
+        return;
+      }
+
       await works_store({
         description: description.value,
-        name: name.value,
+        name: name.value.trim(),
         img: link_img.value,
-        categories: categorySelect,
+        categories: JSON.stringify(categorySelect),
       });
       alert("salvo com sucesso");
-      window.location.reload();
+      // window.location.reload();
     } catch (error) {
       console.log(error);
     }
